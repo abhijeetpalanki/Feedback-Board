@@ -1,6 +1,16 @@
+"use client";
+import { useState } from "react";
 import FeedbackItem from "./components/FeedbackItem";
+import FeedbackFormPopup from "./components/FeedbackFormPopup";
+import Button from "./components/Button";
 
 export default function Home() {
+  const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+
+  function openFeedbackPopup() {
+    setShowFeedbackPopup(true);
+  }
+
   return (
     <main className="bg-white max-w-2xl mx-auto shadow-lg md:rounded-lg md:mt-8 overflow-hidden">
       <div className="p-8 bg-gradient-to-r from-cyan-400 to-blue-400">
@@ -12,9 +22,9 @@ export default function Home() {
       <div className="bg-gray-100 px-8 py-4 flex border-b">
         <div className="grow"></div>
         <div className="">
-          <button className="bg-blue-500 py-1 px-4 rounded-md text-white text-opacity-90">
+          <Button primary onClick={openFeedbackPopup}>
             Make a suggestion!
-          </button>
+          </Button>
         </div>
       </div>
       <div className="px-8">
@@ -22,9 +32,10 @@ export default function Home() {
         <FeedbackItem />
         <FeedbackItem />
         <FeedbackItem />
-        <FeedbackItem />
-        <FeedbackItem />
       </div>
+      {showFeedbackPopup && (
+        <FeedbackFormPopup setShow={setShowFeedbackPopup} />
+      )}
     </main>
   );
 }
