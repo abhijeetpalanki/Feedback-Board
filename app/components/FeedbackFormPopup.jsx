@@ -3,6 +3,7 @@ import Button from "./Button";
 import Popup from "./Popup";
 import axios from "axios";
 import Attachment from "./icons/Attachment";
+import Trash from "./icons/Trash";
 
 export default function FeedbackFormPopup({ setShow }) {
   const [title, setTitle] = useState("");
@@ -28,6 +29,13 @@ export default function FeedbackFormPopup({ setShow }) {
     setUploads([...uploads, ...res.data]);
   }
 
+  function handleRemoveAttachmentButtonClick(e, link) {
+    e.preventDefault();
+    setUploads((prev) => {
+      return prev.filter((item) => item !== link);
+    });
+  }
+
   return (
     <Popup setShow={setShow} heading={"Make a Suggestion"}>
       <form className="p-8">
@@ -51,9 +59,20 @@ export default function FeedbackFormPopup({ setShow }) {
             <label className="block mt-2 mb-1 text-slate-700">
               Attachments
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               {uploads.map((link, i) => (
-                <a href={link} target="_blank" className="h-16" key={i}>
+                <a
+                  href={link}
+                  target="_blank"
+                  className="relative h-16"
+                  key={i}
+                >
+                  <button
+                    onClick={(e) => handleRemoveAttachmentButtonClick(e, link)}
+                    className="absolute p-1 text-white bg-red-400 rounded-md -top-2 -right-2"
+                  >
+                    <Trash />
+                  </button>
                   {/(.jpg|.jpeg|.png)$/.test(link) ? (
                     <div className="">
                       <img
