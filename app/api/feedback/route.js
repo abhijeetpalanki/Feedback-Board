@@ -5,7 +5,7 @@ export async function POST(request) {
   const jsonBody = await request.json();
   const { title, description } = jsonBody;
 
-  const mongoUrl = process.env.MONGO_URL;
+  const mongoUrl = process.env.DB_URL;
   mongoose.connect(mongoUrl);
   await Feedback.create({ title, description });
 
