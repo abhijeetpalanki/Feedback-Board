@@ -11,7 +11,7 @@ export default function FeedbackItem({
         e.preventDefault();
         onOpen();
       }}
-      className="flex gap-8 items-center my-8"
+      className="flex gap-8 items-center justify-between my-8"
     >
       <div className="">
         <h2 className="font-bold">{title}</h2>
