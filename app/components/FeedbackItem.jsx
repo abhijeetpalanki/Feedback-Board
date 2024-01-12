@@ -11,16 +11,16 @@ export default function FeedbackItem({
         e.preventDefault();
         onOpen();
       }}
-      className="flex gap-8 items-center justify-between my-8"
+      className="flex items-center gap-8 my-8"
     >
-      <div className="">
+      <div className="flex-grow">
         <h2 className="font-bold">{title}</h2>
-        <p className="text-gray-600 text-sm">{description}</p>
+        <p className="text-sm text-gray-600">{description}</p>
       </div>
       <div className="">
-        <button className="shadow-sm shadow-gray-200 border rounded-md py-1 px-4 flex items-center gap-1 text-gray-600">
+        <button className="flex items-center gap-1 px-4 py-1 text-gray-600 border rounded-md shadow-sm shadow-gray-200">
           <span className="traingle-vote-up"></span>
-          {votesCount}
+          {votesCount || 0}
         </button>
       </div>
     </a>
