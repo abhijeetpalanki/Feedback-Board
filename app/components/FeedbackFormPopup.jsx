@@ -4,7 +4,7 @@ import Popup from "./Popup";
 import axios from "axios";
 import Attachment from "./icons/Attachment";
 import Trash from "./icons/Trash";
-import { MoonLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 
 export default function FeedbackFormPopup({ setShow }) {
   const [title, setTitle] = useState("");
@@ -101,7 +101,7 @@ export default function FeedbackFormPopup({ setShow }) {
         )}
         <div className="flex justify-end gap-2 mt-2">
           <label className="flex px-4 py-2 cursor-pointer">
-            {isUploading && <MoonLoader size={18} />}
+            {isUploading && <RingLoader size={18} />}
             <span className={isUploading ? "text-gray-300" : "text-gray-600"}>
               {isUploading ? "Uploading..." : "Attach Files"}
             </span>

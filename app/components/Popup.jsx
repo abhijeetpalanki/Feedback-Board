@@ -1,12 +1,18 @@
-export default function Popup({ setShow, heading, children }) {
+export default function Popup({ setShow, heading, narrow, children }) {
+  function close(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setShow(false);
+  }
+
   return (
     <div
-      onClick={() => setShow(false)}
-      className="fixed inset-0 bg-white md:bg-black/80 flex  md:items-center"
+      onClick={close}
+      className="fixed inset-0 flex bg-white md:bg-black/80 md:items-center"
     >
       <button
-        onClick={() => setShow(false)}
-        className="hidden md:block fixed top-4 right-4 text-white"
+        onClick={close}
+        className="fixed hidden text-white md:block top-4 right-4"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -25,13 +31,16 @@ export default function Popup({ setShow, heading, children }) {
       </button>
       <div className="w-full">
         <div
-          className="bg-white md:max-w-2xl md:mx-auto md:rounded-lg overflow-hidden"
+          className={
+            (narrow ? "md:max-w-sm" : "md:max-w-2xl") +
+            " overflow-hidden bg-white md:mx-auto md:rounded-lg"
+          }
           onClick={(e) => e.stopPropagation()}
         >
           <div className="relative min-h-10 md:min-h-0">
             <button
-              onClick={() => setShow(false)}
-              className="absolute top-4 left-8 md:hidden text-gray-600"
+              onClick={close}
+              className="absolute text-gray-600 top-4 left-8 md:hidden"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

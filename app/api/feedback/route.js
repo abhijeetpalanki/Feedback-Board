@@ -2,6 +2,8 @@ import { Feedback } from "@/app/models/Feedback";
 import mongoose from "mongoose";
 
 export async function GET() {
+  const mongoUrl = process.env.DB_URL;
+  mongoose.connect(mongoUrl);
   return Response.json(await Feedback.find());
 }
 
