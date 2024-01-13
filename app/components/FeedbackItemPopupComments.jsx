@@ -1,42 +1,50 @@
-import { useState } from "react";
-import Button from "./Button";
+import { useEffect, useState } from "react";
 import Avatar from "./Avatar";
+import CommentsForm from "./CommentsForm";
+import axios from "axios";
+import Attachment from "./Attachment";
+import TimeAgo from "timeago-react";
 
-export default function FeedbackItemPopupComments() {
-  const [commentText, setCommentText] = useState("");
+export default function FeedbackItemPopupComments({ feedbackId }) {
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    fetchComments();
+  }, []);
+
+  function fetchComments() {
+    axios.get("/api/comment?feedbackId=" + feedbackId).then((res) => {
+      setComments(res.data);
+    });
+  }
 
   return (
     <div className="p-8">
-      <div className="flex gap-4 mb-8">
-        <span className="">
-          <Avatar url="https://i.pravatar.cc/300" />
-        </span>
-        <div className="">
-          <p className="text-gray-600">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus,
-            est sunt? Distinctio voluptatibus a quod repellendus corporis amet
-            perspiciatis illum, blanditiis autem voluptas earum neque. Omnis
-            sapiente corporis eos ut!
-          </p>
-          <div className="text-gray-400 mt-2 text-sm">
-            Anonymous &middot; a few seconds ago
+      {comments.length > 0 &&
+        comments.map((comment, idx) => (
+          <div className="mb-8" key={idx}>
+            <div className="flex gap-4">
+              <Avatar url={comment.user.image} />
+              <div className="">
+                <p className="text-gray-600">{comment.text}</p>
+                <div className="mt-2 text-sm text-gray-400">
+                  {comment.user.name} &middot;
+                  <TimeAgo datetime={comment.createdAt} locale="en_US" />
+                </div>
+                {comment.uploads.length > 0 && (
+                  <div className="flex gap-2 mt-3">
+                    {comment.uploads.map((link, i) => (
+                      <div className="" key={i}>
+                        <Attachment link={link} i={i} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <form>
-        <textarea
-          placeholder="Let us know what you think..."
-          className="border rounded-md w-full p-2"
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-        />
-        <div className="flex justify-end gap-2 mt-2">
-          <Button>Attach Files</Button>
-          <Button primary={"true"} disabled={commentText === ""}>
-            Comment
-          </Button>
-        </div>
-      </form>
+        ))}
+      <CommentsForm feedbackId={feedbackId} onPost={fetchComments} />
     </div>
   );
 }

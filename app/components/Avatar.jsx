@@ -1,7 +1,9 @@
 export default function Avatar({ url = null }) {
   return (
     <div>
-      <div className="rounded-full bg-blue-300 w-12 h-12 flex items-center justify-center"></div>
+      <div className="w-12 h-12 overflow-hidden bg-blue-300 rounded-full">
+        {!!url && <img src={url} alt="avatar" className="rounded-full" />}
+      </div>
     </div>
   );
 }
