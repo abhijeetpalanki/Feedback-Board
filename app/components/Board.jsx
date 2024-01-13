@@ -16,9 +16,7 @@ export default function Board() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    axios.get("/api/feedback").then((res) => {
-      setFeedbacks(res.data);
-    });
+    fetchFeedbacks();
   }, []);
 
   useEffect(() => {
@@ -36,6 +34,12 @@ export default function Board() {
       }
     }
   }, [session?.user?.email]);
+
+  async function fetchFeedbacks() {
+    axios.get("/api/feedback").then((res) => {
+      setFeedbacks(res.data);
+    });
+  }
 
   async function fetchVotes() {
     setVotesLoading(true);
@@ -85,7 +89,10 @@ export default function Board() {
         ))}
       </div>
       {showFeedbackPopupForm && (
-        <FeedbackFormPopup setShow={setShowFeedbackPopupForm} />
+        <FeedbackFormPopup
+          setShow={setShowFeedbackPopupForm}
+          onFeedbackCreate={fetchFeedbacks}
+        />
       )}
       {showFeedbackPopupItem && (
         <FeedbackItemPopup

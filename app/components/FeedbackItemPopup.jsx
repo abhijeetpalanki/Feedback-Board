@@ -5,13 +5,15 @@ import Popup from "./Popup";
 import { useState } from "react";
 import { RingLoader } from "react-spinners";
 import { useSession } from "next-auth/react";
-import Tick from "./icons/Tick";
+import TickIcon from "./icons/TickIcon";
+import Attachment from "./Attachment";
 
 export default function FeedbackItemPopup({
   _id,
   title,
   description,
   votes,
+  uploads,
   setShow,
   onVotesChange,
 }) {
@@ -32,6 +34,16 @@ export default function FeedbackItemPopup({
       <div className="p-8 pb-2">
         <h2 className="mb-2 text-lg font-bold">{title}</h2>
         <p className="text-gray-600">{description}</p>
+        {uploads?.length > 0 && (
+          <div className="mt-4">
+            <span className="text-sm text-gray-600">Attachments:</span>
+            <div className="flex gap-2">
+              {uploads.map((link, i) => (
+                <Attachment key={i} link={link} i={i} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       <div className="flex justify-end px-8 py-2 border-b">
         <Button primary="true" onClick={handleVoteButtonClick}>
@@ -40,7 +52,7 @@ export default function FeedbackItemPopup({
             <>
               {iVoted && (
                 <>
-                  <Tick className="w-4 h-4" />
+                  <TickIcon className="w-4 h-4" />
                   Upvoted {votes?.length || 0}
                 </>
               )}

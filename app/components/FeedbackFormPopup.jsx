@@ -2,11 +2,10 @@ import { useState } from "react";
 import Button from "./Button";
 import Popup from "./Popup";
 import axios from "axios";
-import Attachment from "./icons/Attachment";
-import Trash from "./icons/Trash";
 import { RingLoader } from "react-spinners";
+import Attachment from "./Attachment";
 
-export default function FeedbackFormPopup({ setShow }) {
+export default function FeedbackFormPopup({ setShow, onFeedbackCreate }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [uploads, setUploads] = useState([]);
@@ -16,6 +15,7 @@ export default function FeedbackFormPopup({ setShow }) {
     e.preventDefault();
     axios.post("/api/feedback", { title, description, uploads }).then(() => {
       setShow(false);
+      onFeedbackCreate();
     });
   }
 
@@ -68,33 +68,15 @@ export default function FeedbackFormPopup({ setShow }) {
             </label>
             <div className="flex gap-3">
               {uploads.map((link, i) => (
-                <a
-                  href={link}
-                  target="_blank"
-                  className="relative h-16"
+                <Attachment
                   key={i}
-                >
-                  <button
-                    onClick={(e) => handleRemoveAttachmentButtonClick(e, link)}
-                    className="absolute p-1 text-white bg-red-400 rounded-md -top-2 -right-2"
-                  >
-                    <Trash />
-                  </button>
-                  {/(.jpg|.jpeg|.png)$/.test(link) ? (
-                    <div className="">
-                      <img
-                        src={link}
-                        alt="link"
-                        className="w-auto h-16 rounded-md"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex items-center h-16 p-2 bg-gray-200 rounded-md">
-                      <Attachment className="w-4 h-4" />
-                      {link.split("/")[3].substring(13)}
-                    </div>
-                  )}
-                </a>
+                  i={i}
+                  link={link}
+                  showRemoveButton="true"
+                  handleRemoveAttachmentButtonClick={(e, link) =>
+                    handleRemoveAttachmentButtonClick(e, link)
+                  }
+                />
               ))}
             </div>
           </div>
@@ -112,7 +94,7 @@ export default function FeedbackFormPopup({ setShow }) {
               className="hidden"
             />
           </label>
-          <Button primary={"true"} onClick={handleCreatePostButtonClick}>
+          <Button primary="true" onClick={handleCreatePostButtonClick}>
             Create Post
           </Button>
         </div>

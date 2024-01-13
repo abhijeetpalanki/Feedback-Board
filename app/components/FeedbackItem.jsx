@@ -30,7 +30,7 @@ export default function FeedbackItem({
       setShowLoginPopup(true);
     } else {
       setIsVotesLoading(true);
-      axios.post("/api/vote", { feedbackId: _id }).then(async (res) => {
+      axios.post("/api/vote", { feedbackId: _id }).then(async () => {
         await onVotesChange();
         setIsVotesLoading(false);
       });
@@ -41,9 +41,7 @@ export default function FeedbackItem({
     e.stopPropagation();
     e.preventDefault();
 
-    await signIn("google", undefined, {
-      prompt: "select_account",
-    });
+    await signIn("google");
   }
 
   const iVoted = votes?.find((v) => v.userEmail === session?.user?.email);
