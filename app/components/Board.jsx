@@ -59,7 +59,6 @@ export default function Board() {
 
   return (
     <main className="max-w-2xl mx-auto overflow-hidden bg-white shadow-lg md:rounded-lg md:mt-8">
-      {session?.user?.email || "not logged in"}
       <div className="p-8 bg-gradient-to-r from-cyan-400 to-blue-400">
         <h1 className="text-xl font-bold">Feedback Board</h1>
         <p className="text-opacity-90 text-slate-700">
