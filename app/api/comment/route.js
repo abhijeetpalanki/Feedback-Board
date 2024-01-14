@@ -29,6 +29,9 @@ export async function POST(request) {
   const jsonBody = await request.json();
   const { text, uploads, feedbackId } = jsonBody;
   const session = await getServerSession(authOptions);
+  if (!session) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const mongoUrl = process.env.DB_URL;
   mongoose.connect(mongoUrl);

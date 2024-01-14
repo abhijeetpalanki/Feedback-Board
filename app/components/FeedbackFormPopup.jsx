@@ -4,18 +4,28 @@ import Popup from "./Popup";
 import axios from "axios";
 import Attachment from "./Attachment";
 import AttachFilesButton from "./AttachFilesButton";
+import { signIn, useSession } from "next-auth/react";
 
 export default function FeedbackFormPopup({ setShow, onFeedbackCreate }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [uploads, setUploads] = useState([]);
+  const { data: session } = useSession();
 
-  function handleCreatePostButtonClick(e) {
+  async function handleCreatePostButtonClick(e) {
     e.preventDefault();
-    axios.post("/api/feedback", { title, description, uploads }).then(() => {
-      setShow(false);
-      onFeedbackCreate();
-    });
+    if (session) {
+      axios.post("/api/feedback", { title, description, uploads }).then(() => {
+        setShow(false);
+        onFeedbackCreate();
+      });
+    } else {
+      localStorage.setItem(
+        "post_after_login",
+        JSON.stringify({ title, description, uploads })
+      );
+      await signIn("google");
+    }
   }
 
   function handleRemoveAttachmentButtonClick(e, link) {
@@ -70,7 +80,7 @@ export default function FeedbackFormPopup({ setShow, onFeedbackCreate }) {
         <div className="flex justify-end gap-2 mt-2">
           <AttachFilesButton onUploadNewFiles={addNewUploads} />
           <Button primary="true" onClick={handleCreatePostButtonClick}>
-            Create Post
+            {session ? "Create Post" : "Login & Post"}
           </Button>
         </div>
       </form>
