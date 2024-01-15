@@ -1,3 +1,4 @@
+import { Feedback } from "@/app/models/Feedback";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { Vote } from "@/app/models/Vote";
 import mongoose from "mongoose";
@@ -15,6 +16,11 @@ export async function GET(request) {
   return Response.json([]);
 }
 
+async function recountVotes(feedbackId) {
+  const count = await Vote.countDocuments({ feedbackId });
+  await Feedback.updateOne({ _id: feedbackId }, { votesCountCached: count });
+}
+
 export async function POST(request) {
   const mongoUrl = process.env.DB_URL;
   mongoose.connect(mongoUrl);
@@ -25,11 +31,14 @@ export async function POST(request) {
   const { email: userEmail } = session.user;
 
   const existingVote = await Vote.findOne({ userEmail, feedbackId });
+
   if (existingVote) {
     await Vote.findByIdAndDelete(existingVote._id);
+    await recountVotes(feedbackId);
     return Response.json(existingVote);
   } else {
     const voteDoc = await Vote.create({ userEmail, feedbackId });
+    await recountVotes(feedbackId);
     return Response.json(voteDoc);
   }
 }

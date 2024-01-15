@@ -8,6 +8,7 @@ const feedbackSchema = new Schema(
     description: { type: String },
     uploads: { type: [String] },
     userEmail: { type: String, required: true, ref: "User" },
+    votesCountCached: { type: Number, default: 0 },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );
