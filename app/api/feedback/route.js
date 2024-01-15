@@ -11,6 +11,8 @@ export async function GET(request) {
   if (url.searchParams.get("id")) {
     return Response.json(await Feedback.findById(url.searchParams.get("id")));
   } else {
+    const loadedRows = url.searchParams.get("loadedRows");
+
     const sortParam = url.searchParams.get("sort");
     let sortDef;
     if (sortParam === "latest") {
@@ -26,6 +28,8 @@ export async function GET(request) {
     return Response.json(
       await Feedback.find(null, null, {
         sort: sortDef,
+        skip: loadedRows,
+        limit: 10,
       }).populate("user")
     );
   }
