@@ -78,6 +78,11 @@ export default function Board() {
     setShowFeedbackPopupItem(feedback);
   }
 
+  async function handleFeedbackUpdate(newData) {
+    setShowFeedbackPopupItem((prev) => ({ ...prev, ...newData }));
+    await fetchFeedbacks();
+  }
+
   return (
     <main className="max-w-2xl mx-auto overflow-hidden bg-white shadow-lg md:rounded-lg md:mt-8">
       <div className="p-8 bg-gradient-to-r from-cyan-400 to-blue-400">
@@ -123,6 +128,7 @@ export default function Board() {
             (v) =>
               v.feedbackId.toString() === showFeedbackPopupItem._id.toString()
           )}
+          onUpdate={handleFeedbackUpdate}
         />
       )}
     </main>

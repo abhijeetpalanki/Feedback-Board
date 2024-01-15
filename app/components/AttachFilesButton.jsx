@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { RingLoader } from "react-spinners";
+import UploadIcon from "./icons/UploadIcon";
 
 export default function AttachFilesButton({ onUploadNewFiles }) {
   const [isUploading, setIsUploading] = useState(false);
@@ -23,8 +24,9 @@ export default function AttachFilesButton({ onUploadNewFiles }) {
   }
 
   return (
-    <label className="flex px-4 py-2 cursor-pointer">
+    <label className="flex items-center gap-2 px-4 py-2 cursor-pointer">
       {isUploading && <RingLoader size={18} />}
+      {!isUploading && <UploadIcon className="w-4 h-4" />}
       <span className={isUploading ? "text-gray-300" : "text-gray-600"}>
         {isUploading ? "Uploading..." : "Attach Files"}
       </span>

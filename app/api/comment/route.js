@@ -12,15 +12,7 @@ export async function GET(request) {
       feedbackId: url.searchParams.get("feedbackId"),
     }).populate("user");
 
-    return Response.json(
-      result.map((doc) => {
-        const { userEmail, ...commentWithoutEmail } = doc.toJSON();
-        console.log(commentWithoutEmail);
-        const { email, ...userWithoutEmail } = commentWithoutEmail.user;
-        commentWithoutEmail.user = userWithoutEmail;
-        return commentWithoutEmail;
-      })
-    );
+    return Response.json(result);
   }
   return Response.json([]);
 }
@@ -28,6 +20,7 @@ export async function GET(request) {
 export async function POST(request) {
   const jsonBody = await request.json();
   const { text, uploads, feedbackId } = jsonBody;
+
   const session = await getServerSession(authOptions);
   if (!session) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -41,6 +34,25 @@ export async function POST(request) {
     userEmail: session.user.email,
     feedbackId,
   });
+
+  return Response.json(commentDoc);
+}
+
+export async function PUT(request) {
+  const mongoUrl = process.env.DB_URL;
+  mongoose.connect(mongoUrl);
+
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const jsonBody = await request.json();
+  const { id, text, uploads } = jsonBody;
+  const commentDoc = await Comment.findOneAndUpdate(
+    { _id: id, userEmail: session.user.email },
+    { text, uploads }
+  );
 
   return Response.json(commentDoc);
 }
