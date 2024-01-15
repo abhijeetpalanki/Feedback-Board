@@ -1,4 +1,5 @@
 import { Feedback } from "@/app/models/Feedback";
+import { Comment } from "@/app/models/Comment";
 import mongoose from "mongoose";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
@@ -12,6 +13,7 @@ export async function GET(request) {
     return Response.json(await Feedback.findById(url.searchParams.get("id")));
   } else {
     const loadedRows = url.searchParams.get("loadedRows");
+    const searchTerm = url.searchParams.get("search");
 
     const sortParam = url.searchParams.get("sort");
     let sortDef;
@@ -25,8 +27,26 @@ export async function GET(request) {
       sortDef = { votesCountCached: -1 };
     }
 
+    let filter = null;
+    if (searchTerm) {
+      const comments = await Comment.find(
+        { text: { $regex: ".*" + searchTerm + ".*" } },
+        "feedbackId",
+        {
+          limit: 20,
+        }
+      );
+      filter = {
+        $or: [
+          { title: { $regex: ".*" + searchTerm + ".*" } },
+          { description: { $regex: ".*" + searchTerm + ".*" } },
+          { _id: { $in: comments.map((comment) => comment.feedbackId) } },
+        ],
+      };
+    }
+
     return Response.json(
-      await Feedback.find(null, null, {
+      await Feedback.find(filter, null, {
         sort: sortDef,
         skip: loadedRows,
         limit: 10,

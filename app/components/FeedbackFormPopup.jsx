@@ -52,7 +52,7 @@ export default function FeedbackFormPopup({ setShow, onFeedbackCreate }) {
         />
         <label className="block mt-4 mb-1 text-slate-700">Details</label>
         <textarea
-          className="w-full p-2 border rounded-md"
+          className="w-full h-24 p-2 border rounded-md"
           placeholder="Describe your suggestion"
           value={description}
           onChange={(e) => setDescription(e.target.value)}

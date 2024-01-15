@@ -7,6 +7,8 @@ import FeedbackItem from "./FeedbackItem";
 import FeedbackFormPopup from "./FeedbackFormPopup";
 import Button from "./Button";
 import FeedbackItemPopup from "./FeedbackItemPopup";
+import SearchIcon from "./icons/SearchIcon";
+import { debounce } from "lodash";
 
 export default function Board() {
   const [showFeedbackPopupForm, setShowFeedbackPopupForm] = useState(false);
@@ -16,11 +18,16 @@ export default function Board() {
   const [votesLoading, setVotesLoading] = useState(false);
   const [sort, setSort] = useState("votes");
   const [fetchingFeedbacks, setFetchingFeedbacks] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [waiting, setWaiting] = useState(false);
 
+  const searchTermRef = useRef("");
   const loadedAllRecordsRef = useRef(false);
   const fetchingFeedbacksRef = useRef(false);
   const loadedRows = useRef(0);
   const sortRef = useRef("votes");
+  const waitingRef = useRef(false);
+  const debouncedFetchFeedbacksRef = useRef(debounce(fetchFeedbacks, 300));
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -35,8 +42,14 @@ export default function Board() {
     loadedRows.current = 0;
     sortRef.current = sort;
     loadedAllRecordsRef.current = false;
-    fetchFeedbacks();
-  }, [sort]);
+    searchTermRef.current = searchTerm;
+    if (feedbacks?.length > 0) {
+      setFeedbacks([]);
+    }
+    setWaiting(true);
+    waitingRef.current = true;
+    debouncedFetchFeedbacksRef.current();
+  }, [sort, searchTerm]);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -103,7 +116,7 @@ export default function Board() {
     setFetchingFeedbacks(true);
     axios
       .get(
-        `/api/feedback?sort=${sortRef.current}&loadedRows=${loadedRows.current}`
+        `/api/feedback?sort=${sortRef.current}&loadedRows=${loadedRows.current}&search=${searchTermRef.current}`
       )
       .then((res) => {
         if (append) {
@@ -119,6 +132,8 @@ export default function Board() {
         }
         fetchingFeedbacksRef.current = false;
         setFetchingFeedbacks(false);
+        waitingRef.current = false;
+        setWaiting(false);
       });
   }
 
@@ -151,11 +166,10 @@ export default function Board() {
           Help me decide what should I build next or improve.
         </p>
       </div>
-      <div className="flex px-8 py-4 bg-gray-100 border-b">
-        <div className="flex items-center grow">
-          <span className="text-sm text-gray-400">Sort By:</span>
+      <div className="flex items-center px-8 py-4 bg-gray-100 border-b">
+        <div className="flex items-center gap-4 text-gray-400 grow">
           <select
-            className="py-2 text-gray-600 bg-transparent"
+            className="py-2 bg-transparent"
             value={sort}
             onChange={(e) => setSort(e.target.value)}
           >
@@ -163,6 +177,16 @@ export default function Board() {
             <option value="latest">Latest</option>
             <option value="oldest">Oldest</option>
           </select>
+          <div className="relative">
+            <SearchIcon className="absolute w-4 h-4 pointer-events-none top-3 left-2" />
+            <input
+              type="text"
+              placeholder="Search"
+              className="p-2 bg-transparent pl-7"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
         <div className="">
           <Button primary="true" onClick={openFeedbackPopupForm}>
@@ -171,6 +195,11 @@ export default function Board() {
         </div>
       </div>
       <div className="px-8">
+        {feedbacks.length === 0 && !fetchingFeedbacks && !waiting && (
+          <div className="py-8 text-4xl text-gray-200">
+            No Feedbacks Found :(
+          </div>
+        )}
         {feedbacks.map((feedback, idx) => (
           <FeedbackItem
             {...feedback}
@@ -183,7 +212,7 @@ export default function Board() {
             key={idx}
           />
         ))}
-        {fetchingFeedbacks && (
+        {(fetchingFeedbacks || waiting) && (
           <div className="p-4">
             <RingLoader size={24} />
           </div>

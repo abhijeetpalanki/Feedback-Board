@@ -96,7 +96,14 @@ export default function FeedbackItemPopup({
             className="block w-full p-2 mb-2 border rounded-md"
           />
         )}
-        {!isEditMode && <p className="text-gray-600">{description}</p>}
+        {!isEditMode && (
+          <p
+            className="text-gray-600"
+            dangerouslySetInnerHTML={{
+              __html: description.replace(/\n/gi, "<br />"),
+            }}
+          />
+        )}
 
         {uploads?.length > 0 && (
           <div className="mt-4">

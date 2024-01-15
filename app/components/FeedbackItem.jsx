@@ -45,6 +45,10 @@ export default function FeedbackItem({
   }
 
   const iVoted = votes?.find((v) => v.userEmail === session?.user?.email);
+  const shortDescription =
+    description?.length > 200
+      ? description?.substring(0, 200) + "..."
+      : description;
 
   return (
     <a
@@ -57,7 +61,7 @@ export default function FeedbackItem({
     >
       <div className="flex-grow">
         <h2 className="font-bold">{title}</h2>
-        <p className="text-sm text-gray-600">{description}</p>
+        <p className="text-sm text-gray-600">{shortDescription}</p>
       </div>
       <div className="">
         {showLoginPopup && (
